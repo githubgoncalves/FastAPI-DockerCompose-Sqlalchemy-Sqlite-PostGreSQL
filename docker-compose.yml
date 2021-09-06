@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "123456"
+    ports:
+      - "15432:5432"
+    volumes:
+      - /ProjetosPython/GIT/FullStack-challenge/db
+    container_name: banco-dados-postgres
+    networks:
+      - fastapi-network
+
+  backend:
+    image: "tiangolo/uvicorn-gunicorn-fastapi:python3.7"
+    depends_on:
+      - db
+    build: ./backend
+    ports:
+      - "5000:5000"  
+    volumes:
+      - ./backend:/backend
+    environment:
+      - APP_NAME=APP_FASTAPI
+      - TIPO_DATABASE=SQLITE
+    container_name: micro-service-fastapi
+    networks:
+      - fastapi-network
+
+networks: 
+  fastapi-network:
+    driver: bridge
